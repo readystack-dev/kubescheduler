@@ -1,0 +1,281 @@
+{
+ "schema": "readystack.recipe.v1",
+ "slug": "kubescheduler",
+ "tag": "v1.36.6-CE-ubuntu24.04-r5",
+ "tarball": "ReadyStack-kubescheduler-v1.36.6-CE-ubuntu24.04-r5.tar.gz",
+ "tarball_sha256": "47c36f784c6a5afdd3ed51e577d5ca9f862f963c2b818187c220fa72a5517fb1",
+ "kit_root": "v1.36.6-CE-ubuntu24.04-r5",
+ "generated_at": "2026-11-21T08:12:58Z",
+ "generator": "KitForge release/recipe_publish.py",
+ "dockerfile": "Dockerfile.offline.pinned",
+ "build_script": "BUILD_OFFLINE.sh",
+ "preview_lines": 24,
+ "pins": {
+  "upstream": {
+   "repo": "https://github.com/kubernetes/kubernetes",
+   "ref": "v1.36.6",
+   "commit": "1b2171b110bb2a2542e1322035c6583ec86eb976",
+   "url": "https://github.com/kubernetes/kubernetes/tree/1b2171b110bb2a2542e1322035c6583ec86eb976",
+   "from": "docs/provenance/BUILD_RECIPE.json"
+  },
+  "fetches": [
+   {
+    "kind": "git",
+    "url": "https://github.com/kubernetes/kubernetes.git",
+    "ref": "v1.36.6"
+   }
+  ],
+  "bases": [
+   {
+    "ref": "golang:1.26.11-bookworm@sha256:dc40a13b61304647ed7e5d581d246b86413dfc29d63c6d018310feb93cd98fc0",
+    "image": "golang:1.26.11-bookworm",
+    "digest": "sha256:dc40a13b61304647ed7e5d581d246b86413dfc29d63c6d018310feb93cd98fc0"
+   },
+   {
+    "ref": "ubuntu:24.04@sha256:9c7f200c07e3d4a03e7249d2c16bf66a51120fb876aa2242cf31451412543289",
+    "image": "ubuntu:24.04",
+    "digest": "sha256:9c7f200c07e3d4a03e7249d2c16bf66a51120fb876aa2242cf31451412543289"
+   }
+  ],
+  "toolchain": {
+   "buildkit": "moby/buildkit:v0.31.2",
+   "buildkit_image_digest": "sha256:e0e67ea9c4bb07bdef683e29f70f3b623d1eb9c82274a9ec04e6bb0511449fb0",
+   "builder_images": [
+    "golang:1.26.11-bookworm@sha256:dc40a13b61304647ed7e5d581d246b86413dfc29d63c6d018310feb93cd98fc0"
+   ]
+  },
+  "build_method": "source-rebuild-go",
+  "source_date_epoch": 1795244555,
+  "source_date_epoch_utc": "2026-11-21T07:02:35Z",
+  "target": {
+   "image_manifest_digest": "sha256:96cc95e028f81d33577a396cf44b73530017a25dd5abedb2fb3d9036fcdb04f3",
+   "config_digest": "sha256:7c67b8517860f8aafefd8893ca007690fc30b8bcb587122fe5f1e5c8cd8bc952",
+   "image": "readystack/kubescheduler:v1.36.6-CE-ubuntu24.04-r5"
+  },
+  "checksummed_files": 58538
+ },
+ "files": [
+  {
+   "path": "BASES.tsv",
+   "size": 264,
+   "sha256": "4b98a700d33a9f62c6299744be2f31889777ec9f3b1cf9150d02a25daa1a297d",
+   "lines": 2,
+   "public": "full"
+  },
+  {
+   "path": "BUILD_OFFLINE.sh",
+   "size": 8856,
+   "sha256": "6ab4f08a6ec775b32d854f03413b30ecfe555ddba78cf0de956235f5a2a39542",
+   "lines": 162,
+   "public": "preview",
+   "preview_lines": 24
+  },
+  {
+   "path": "CHECKSUMS.sha256",
+   "size": 9627012,
+   "sha256": "e9dc51b6f37ad3e276fef756e56f2eef4933709036c929daac965adda853bbe5",
+   "lines": 58538,
+   "public": "account",
+   "stored": "gzip"
+  },
+  {
+   "path": "DOCKERFILE_NAME.txt",
+   "size": 26,
+   "sha256": "9aadd1ede68e016a6f163c97befc5ff2fcdc8ebd4f84b108dba63cb195fa8c84",
+   "lines": 1,
+   "public": "full"
+  },
+  {
+   "path": "Dockerfile",
+   "size": 7597,
+   "sha256": "f22a9d569828e9ad26571d995efc67a0973feda42a34c087b6c0dd19689a702e",
+   "lines": 92,
+   "public": "account"
+  },
+  {
+   "path": "Dockerfile.offline",
+   "size": 7597,
+   "sha256": "f22a9d569828e9ad26571d995efc67a0973feda42a34c087b6c0dd19689a702e",
+   "lines": 92,
+   "public": "account"
+  },
+  {
+   "path": "Dockerfile.offline.pinned",
+   "size": 7597,
+   "sha256": "f22a9d569828e9ad26571d995efc67a0973feda42a34c087b6c0dd19689a702e",
+   "lines": 92,
+   "public": "preview",
+   "preview_lines": 24
+  },
+  {
+   "path": "Dockerfile.vendor",
+   "size": 7178,
+   "sha256": "417d4aaeece33552ac24b8851241232516b23ddf8c7e54264604f85a2fd73f43",
+   "lines": 83,
+   "public": "account"
+  },
+  {
+   "path": "FILE_MODES.tsv",
+   "size": 6833506,
+   "sha256": "f9681072897aad93e07d92454737ba300980656db1da6c7947477ae1b7d75a17",
+   "lines": 70315,
+   "public": "account",
+   "stored": "gzip"
+  },
+  {
+   "path": "MANIFEST.txt",
+   "size": 5646458,
+   "sha256": "0cfda5225f8fa2d25341d09fb7bc7a8b8e39a654fc56027b57a1ba9a2aa75b26",
+   "lines": 58540,
+   "public": "account",
+   "stored": "gzip"
+  },
+  {
+   "path": "README.md",
+   "size": 3340,
+   "sha256": "7f3cd56ebfc74346e97c90ef4bf0afb53275e374cd852786650196e4b771d358",
+   "lines": 39,
+   "public": "account"
+  },
+  {
+   "path": "SOURCE_DATE_EPOCH.txt",
+   "size": 11,
+   "sha256": "cf4e987636894f4fcc7ecfaf2b4ce8a3219a90f063c7bbfd659d311f1384f130",
+   "lines": 1,
+   "public": "full"
+  },
+  {
+   "path": "TARGET_DIGEST.txt",
+   "size": 476,
+   "sha256": "b2f78f8bd5d93014f4d9561a5b015060bc05e5eb003866fa75f54ed9bac92f4e",
+   "lines": 11,
+   "public": "full"
+  },
+  {
+   "path": "VERIFY_OFFLINE.sh",
+   "size": 10153,
+   "sha256": "3e8184ea230cfd8f41f977e26be6bf7bd03112c396c517837ce0c7de4f7399dd",
+   "lines": 165,
+   "public": "account"
+  },
+  {
+   "path": "docs/PROVENANCE.md",
+   "size": 2676,
+   "sha256": "6bd6a563dc76bba05e958995dcbbd9f850465518e6eff5fbe4fc6debe25c3403",
+   "lines": 36,
+   "public": "account"
+  },
+  {
+   "path": "docs/REBUILD.md",
+   "size": 6438,
+   "sha256": "0307d7e3644d6fb67d42c49b6393f01b3ad8747920ec4049603902ae2ba92370",
+   "lines": 62,
+   "public": "account"
+  },
+  {
+   "path": "docs/VERIFY.md",
+   "size": 2064,
+   "sha256": "33fc50bf43eff67ccb6f912425c7e347a397cc9b8aca5739abaf13b0caf4a09d",
+   "lines": 34,
+   "public": "account"
+  },
+  {
+   "path": "docs/provenance/BASE_IMAGE_DIGESTS.lock",
+   "size": 79,
+   "sha256": "0aa87ea9f6fefff1330b51d97384be12e22a0fca551a46585fe3779fdfc47ef6",
+   "lines": 2,
+   "public": "full"
+  },
+  {
+   "path": "docs/provenance/BUILD_RECIPE.json",
+   "size": 3407,
+   "sha256": "712e1c65735ea0a6c7bb64d28569e993baf1c8c365ad74001731a4fdc11ef269",
+   "lines": 48,
+   "public": "account"
+  },
+  {
+   "path": "docs/provenance/CUSTODY_INPUTS.json",
+   "size": 660,
+   "sha256": "0de15cfb56ba199a47dd30d4ddba676c63fb3955076dccd779d66f9b70c917f9",
+   "lines": 17,
+   "public": "account"
+  },
+  {
+   "path": "docs/provenance/SOURCE_FILE_MANIFEST.json",
+   "size": 262257,
+   "sha256": "5d272c82a631fd1d1bedaaa744ee7d13bf0c337a7aee6811684bca756de15136",
+   "lines": 5007,
+   "public": "account",
+   "stored": "gzip"
+  },
+  {
+   "path": "docs/provenance/SOURCE_TREE_HASH.json",
+   "size": 319,
+   "sha256": "2d16f058905f04ad5ceeca44ab82a7c1620bedef7ff778c49b944df1adf0e125",
+   "lines": 9,
+   "public": "full"
+  },
+  {
+   "path": "docs/provenance/SYSTEM_PINNING.lock",
+   "size": 23,
+   "sha256": "0630392bbd9f11668e937cf0a980d4ae742c8b5f21b00e3da52f03a270846dd7",
+   "lines": 2,
+   "public": "account"
+  },
+  {
+   "path": "docs/provenance/TOOLCHAIN.lock",
+   "size": 8909,
+   "sha256": "4d6ee50771b362b66067c614e767acb761c172f59ec1951d62ab7df000fff949",
+   "lines": 150,
+   "public": "account"
+  },
+  {
+   "path": "rebuild.json",
+   "size": 1507,
+   "sha256": "3a82eecdfd4826d37382d09d6682f9a6d78bc643cc806d518475e37d16084b18",
+   "lines": 42,
+   "public": "account"
+  },
+  {
+   "path": "rs-probe.go",
+   "size": 3179,
+   "sha256": "a8bdee17a3581f8685f58d7a8ccb7524153829f70b19c9d75e323c589de2ad8f",
+   "lines": 117,
+   "public": "account"
+  },
+  {
+   "path": "rs-probe.mod",
+   "size": 40,
+   "sha256": "a480b79acf98e4275725058076ad2a8684a2eee06c27f4337b75339c198ca92d",
+   "lines": 3,
+   "public": "account"
+  },
+  {
+   "path": "toolchain/BUILDKIT_TAG.txt",
+   "size": 22,
+   "sha256": "fcd530eeb02b063d2f047adad6eef896422a8e8d558513e5f09b2a262be32573",
+   "lines": 1,
+   "public": "full"
+  }
+ ],
+ "skipped": [],
+ "kit_adds": {
+  "bases": {
+   "files": 16,
+   "bytes": 326685578
+  },
+  "docs": {
+   "files": 29262,
+   "bytes": 250741818
+  },
+  "toolchain": {
+   "files": 1,
+   "bytes": 111529472
+  },
+  "vendored": {
+   "files": 29233,
+   "bytes": 254404706
+  }
+ },
+ "redacted_files": 0
+}

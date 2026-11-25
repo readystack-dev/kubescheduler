@@ -1,0 +1,11 @@
+image_manifest_digest=sha256:96cc95e028f81d33577a396cf44b73530017a25dd5abedb2fb3d9036fcdb04f3
+config_digest=sha256:7c67b8517860f8aafefd8893ca007690fc30b8bcb587122fe5f1e5c8cd8bc952
+tag=readystack/kubescheduler:v1.36.6-CE-ubuntu24.04-r5
+probe_port=10259
+probe_path=/
+probe_timeout=180
+probe_exec=/usr/local/bin/rs-probe -k https://127.0.0.1:10259/readyz
+verify_boot=oneshot
+verify_oneshot_arg=kube-scheduler
+verify_oneshot_arg=--version
+verify_oneshot_expect=Kubernetes v1.36.6

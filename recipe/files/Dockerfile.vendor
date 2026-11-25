@@ -1,0 +1,83 @@
+# =====================================================================
+# kube-scheduler v1.36.6 VENDOR STAGE (online). Does ALL the network work and exports a build-ready, fully vendored
+# kubernetes tree, so Dockerfile.offline.pinned builds with --network=none. Pin manifest:
+# registry/stacks/kubevirt-stack.json (kubernetes v1.36.6 = 1b2171b110bb2a2542e1322035c6583ec86eb976, Go 1.26.10).
+#   - kubescheduler-src : kubernetes v1.36.6 with its committed workspace vendor/, CVE floors applied by upstream's own
+#                         hack/pin-dependency.sh + hack/update-vendor.sh (kube-scheduler and kube-log-runner, the
+#                         image's /go-runner, are built from it)
+#   - debs              : apt dist-upgrade closure + runtime packages from the SAME pinned ubuntu base the offline
+#                         build FROMs, dpkg-installed offline
+# CVE floors (mirror strategies/kubescheduler.json dep_bumps) are raise-only: a module is moved only when v1.36.6 pins it
+# LOWER, never lowered, and only to an exact version (never @latest). Measured 2026-10-28 on the binaries built from
+# v1.36.6 without floors (Docker Scout fs://, grype 0.120.1): x/net 0.56.0 (1 critical + 4 high, fixed 0.60.0), x/crypto
+# 0.53.0 (3 high, fixed 0.55.0/0.56.0), x/text 0.39.0 (1 high, fixed 0.41.0), grpc 1.79.3 (3 high, fixed 1.82.1-1.83.1;
+# 1.83.2 is the fleet floor), otel/sdk 1.40.0 (1 high, fixed 1.43.0; otel 1.41.0 1 medium, fixed 1.44.0) and the etcd
+# client 3.6.8 (CVE-2026-73500 high, fixed 3.6.14). Go stdlib 1.26.10: none. r2 (2026-11-08): ReadyStack's daily scan of
+# r1 found x/net 0.61.0, where MVS had moved it, with GO-2026-6860 / CVE-2026-78661 (high) and GO-2026-6866 (medium),
+# fixed 0.62.0, so x/net's floor is v0.62.0; its go.mod requires x/crypto 0.58.0, x/sys 0.49.0, x/term 0.47.0 and
+# x/text 0.43.0, which the tree already resolves (nothing else moves). OS-package floors (mirror apt_refresh) are
+# checked on the deb closure below.
+# Export (assemble_kit): docker build -f Dockerfile.vendor --target export, then docker cp the image's / into ./vendored
+# =====================================================================
+
+# --- kubernetes v1.36.6: floors applied with upstream's own tooling, then upstream's vendor update ---------------------
+# kubernetes is a Go workspace (go.work: the root module + the staging modules) with a committed workspace vendor/.
+# hack/pin-dependency.sh raises a module in the root and every staging go.mod; hack/update-vendor.sh re-tidies every
+# module and regenerates vendor/ exactly as upstream does for its own dependency bumps. The OpenTelemetry modules move
+# together, to the set kubernetes v1.37.1 pins (v1.44.0); the three etcd client modules move together, to the etcd
+# release this stack runs (v3.6.16).
+FROM golang:1.26.11-bookworm@sha256:dc40a13b61304647ed7e5d581d246b86413dfc29d63c6d018310feb93cd98fc0 AS kubernetesvendor
+ENV GOTOOLCHAIN=local
+RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends jq >/dev/null && rm -rf /var/lib/apt/lists/*
+WORKDIR /k8s
+RUN git clone --depth 1 --branch v1.36.6 -q https://github.com/kubernetes/kubernetes.git . && \
+    test "$(git rev-parse HEAD)" = 1b2171b110bb2a2542e1322035c6583ec86eb976
+# The probe fails closed (L-A133): only "not a known dependency", or in this vendored workspace "can't resolve module
+# using the vendor directory", means the module is not in the build; any other error stops the step.
+RUN floors="golang.org/x/net@v0.62.0 golang.org/x/crypto@v0.56.0 golang.org/x/text@v0.41.0 \
+             google.golang.org/grpc@v1.83.2 \
+             go.opentelemetry.io/otel@v1.44.0 go.opentelemetry.io/otel/metric@v1.44.0 \
+             go.opentelemetry.io/otel/trace@v1.44.0 go.opentelemetry.io/otel/sdk@v1.44.0 \
+             go.opentelemetry.io/otel/exporters/otlp/otlptrace@v1.44.0 \
+             go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc@v1.44.0 \
+             go.etcd.io/etcd/api/v3@v3.6.16 go.etcd.io/etcd/client/pkg/v3@v3.6.16 go.etcd.io/etcd/client/v3@v3.6.16"; \
+    ge() { [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | head -n1)" = "$2" ]; }; \
+    plan=""; for f in $floors; do \
+      m=${f%@*}; v=${f#*@}; c=$(go list -m -f '{{.Version}}' "$m" 2>/tmp/floor-probe.err) || \
+        { grep -Eq "not a known dependency|can't resolve module using the vendor directory" /tmp/floor-probe.err || \
+          { cat /tmp/floor-probe.err >&2; exit 1; }; c=; }; \
+      [ -n "$c" ] || { echo "floor $m: not a dependency"; continue; }; \
+      ge "$c" "$v" && { echo "floor $m: $c kept"; continue; }; \
+      echo "floor $m: $c -> $v"; plan="$plan $f"; \
+    done; \
+    for f in $plan; do hack/pin-dependency.sh "${f%@*}" "${f#*@}" >/dev/null || { echo "pin-dependency $f failed" >&2; exit 1; }; done; \
+    hack/update-vendor.sh >/tmp/update-vendor.log 2>&1 || { tail -40 /tmp/update-vendor.log; exit 1; }; \
+    for f in $floors; do m=${f%@*}; v=${f#*@}; c=$(go list -m -f '{{.Version}}' "$m"); \
+      ge "$c" "$v" || { echo "after update-vendor.sh $m is $c, below its floor $v" >&2; exit 1; }; echo "resolved $m $c"; done && \
+    chmod -R u+w _output && rm -rf _output .git
+# ^ MVS may resolve a module above its floor (x/crypto resolves v0.58.0, which x/net v0.62.0 requires; r1's x/net
+#   v0.60.0 floor resolved v0.61.0, which the etcd v3.6.16 client modules require): checked as >= floor. _output is
+#   update-vendor.sh's scratch GOPATH (a read-only module cache); vendor/ is what the build uses.
+
+# --- apt CVE dist-upgrade closure + runtime packages (offline dpkg install) -------------------------------------------
+FROM ubuntu:24.04@sha256:9c7f200c07e3d4a03e7249d2c16bf66a51120fb876aa2242cf31451412543289 AS debvendor
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && \
+    apt-get -y --download-only --no-install-recommends dist-upgrade && \
+    apt-get -y --download-only --no-install-recommends install ca-certificates tzdata && \
+    mkdir -p /debs && cp /var/cache/apt/archives/*.deb /debs/ && \
+    echo "vendored $(ls -1 /debs/*.deb | wc -l) debs" && rm -rf /var/lib/apt/lists/*
+# CVE floors on OS packages mirror strategies/kubescheduler.json apt_refresh (hand kits do not read it): the version the
+# offline build installs (the vendored deb, else the pinned base's own) must be at or above its fixed version, else
+# the vendor run fails here instead of shipping it; a floor whose package the image does not carry has nothing to raise.
+RUN atleast() { v=; for d in /debs/*.deb; do [ -e "$d" ] && [ "$(dpkg-deb -f "$d" Package)" = "$1" ] && \
+        v=$(dpkg-deb -f "$d" Version); done; \
+      [ -n "$v" ] || v=$(dpkg-query -W -f='${db:Status-Abbrev} ${Version}' "$1" 2>/dev/null | sed -n 's/^ii *//p'); \
+      if [ -z "$v" ]; then echo "apt floor $1 $2: not in the image"; return 0; fi; \
+      dpkg --compare-versions "$v" ge "$2" || { echo "apt floor $1 $2 did not take: $v" >&2; return 1; }; \
+      echo "apt floor $1 $2: $v"; } && \
+    atleast apt 2.8.4ubuntu0.1 && atleast libapt-pkg6.0t64 2.8.4ubuntu0.1 && atleast libpcre2-8-0 10.42-4ubuntu2.2
+
+FROM scratch AS export
+COPY --from=kubernetesvendor /k8s /kubescheduler-src
+COPY --from=debvendor /debs /debs

@@ -1,0 +1,150 @@
+{
+  "apt_refresh": [
+    {
+      "min_version": "2.8.4ubuntu0.1",
+      "package": "apt",
+      "reason": "CVE-2026-109518 (high): apt 2.8.3 -> 2.8.4ubuntu0.1 (fix published 2026-11-04), found by ReadyStack's daily scan of the live v1.36.6-CE-ubuntu24.04-r1 (2026-11-08, scripts/scan-inventory.py: syft 1.54.1 + grype 0.120.1, DB 2026-11-07). Mirrored in product-kits/kubescheduler/build/ (hand kits do not read apt_refresh): Dockerfile.vendor fails unless the dist-upgrade closure meets it, and the offline Dockerfiles fail unless the installed package does."
+    },
+    {
+      "min_version": "2.8.4ubuntu0.1",
+      "package": "libapt-pkg6.0t64",
+      "reason": "CVE-2026-109518 (high): libapt-pkg6.0t64 2.8.3 -> 2.8.4ubuntu0.1 (the library of the same apt source package), found with apt by the same scan. Mirrored in product-kits/kubescheduler/build/ (hand kits do not read apt_refresh): Dockerfile.vendor fails unless the dist-upgrade closure meets it, and the offline Dockerfiles fail unless the installed package does."
+    },
+    {
+      "min_version": "10.42-4ubuntu2.2",
+      "package": "libpcre2-8-0",
+      "reason": "CVE-2026-86145, CVE-2026-89156, CVE-2026-89157, CVE-2026-89158, CVE-2026-89160, CVE-2026-89161, CVE-2026-103111 (medium): libpcre2-8-0 10.42-4ubuntu2.1 -> 10.42-4ubuntu2.2, found by the same scan; the dist-upgrade closure takes it with apt. Mirrored in product-kits/kubescheduler/build/ (hand kits do not read apt_refresh): Dockerfile.vendor fails unless the dist-upgrade closure meets it, and the offline Dockerfiles fail unless the installed package does."
+    }
+  ],
+  "binaries_from_source": [
+    {
+      "ldflags": "-s -w -X k8s.io/client-go/pkg/version.gitVersion=@VERSION@ -X k8s.io/client-go/pkg/version.gitCommit=@COMMIT@ -X k8s.io/client-go/pkg/version.gitTreeState=clean -X k8s.io/client-go/pkg/version.gitMajor=1 -X k8s.io/client-go/pkg/version.gitMinor=36 -X k8s.io/client-go/pkg/version.buildDate=2026-11-21T07:02:35Z -X k8s.io/component-base/version.gitVersion=@VERSION@ -X k8s.io/component-base/version.gitCommit=@COMMIT@ -X k8s.io/component-base/version.gitTreeState=clean -X k8s.io/component-base/version.gitMajor=1 -X k8s.io/component-base/version.gitMinor=36 -X k8s.io/component-base/version.buildDate=2026-11-21T07:02:35Z",
+      "main_pkg": "./cmd/kube-scheduler",
+      "name": "kube-scheduler",
+      "out_path": "/usr/local/bin/kube-scheduler",
+      "verify_contains": "Kubernetes @VERSION@",
+      "verify_subcmd": "--version"
+    },
+    {
+      "ldflags": "-s -w -X k8s.io/client-go/pkg/version.gitVersion=@VERSION@ -X k8s.io/client-go/pkg/version.gitCommit=@COMMIT@ -X k8s.io/client-go/pkg/version.gitTreeState=clean -X k8s.io/client-go/pkg/version.gitMajor=1 -X k8s.io/client-go/pkg/version.gitMinor=36 -X k8s.io/client-go/pkg/version.buildDate=2026-11-21T07:02:35Z -X k8s.io/component-base/version.gitVersion=@VERSION@ -X k8s.io/component-base/version.gitCommit=@COMMIT@ -X k8s.io/component-base/version.gitTreeState=clean -X k8s.io/component-base/version.gitMajor=1 -X k8s.io/component-base/version.gitMinor=36 -X k8s.io/component-base/version.buildDate=2026-11-21T07:02:35Z",
+      "main_pkg": "./staging/src/k8s.io/component-base/logs/kube-log-runner",
+      "name": "kube-log-runner",
+      "out_path": "/go-runner"
+    }
+  ],
+  "build_method": "source-rebuild-go",
+  "chain_id": 1184,
+  "dep_bumps": [
+    {
+      "module": "golang.org/x/net",
+      "to": "v0.62.0",
+      "why": "v1.36.6 pins 0.56.0: 1 critical + 4 high fixable (CVE-2026-78663 critical, CVE-2026-78659/78660/78669/97032), fixed in 0.60.0 (Docker Scout fs:// on the binaries built without floors, 2026-10-28), the floor of r1; MVS resolved 0.61.0 there (the etcd v3.6.16 client modules require it). r2: 0.61.0 has GO-2026-6860 / CVE-2026-78661 (high) and GO-2026-6866 / CVE-2026-97045 (medium), both fixed in 0.62.0 (published 2026-10-27); ReadyStack's daily scan of the live v1.36.6-CE-ubuntu24.04-r1 (2026-11-08, scripts/scan-inventory.py: syft 1.54.1 + grype 0.120.1, DB 2026-11-07) found 0.61.0 in /usr/local/bin/kube-scheduler. 0.62.0's go.mod requires x/crypto 0.58.0, x/sys 0.49.0, x/term 0.47.0 and x/text 0.43.0, the versions the floored tree already resolves, so no other module moves (go list -m all on v1.36.6's root module with r1's floors and with this one, Go 1.26.10, 2026-11-08: x/net is the only one of 292 modules that differs). Mirrored in product-kits/kubescheduler/build/Dockerfile.vendor's floors; the offline Dockerfiles fail unless the built binary links it."
+    },
+    {
+      "module": "golang.org/x/crypto",
+      "to": "v0.56.0",
+      "why": "v1.36.6 pins 0.53.0: 3 high fixable (CVE-2026-56854/56855/78662), fixed in 0.55.0/0.56.0 (Scout, 2026-10-28). MVS resolves 0.58.0."
+    },
+    {
+      "module": "golang.org/x/text",
+      "to": "v0.41.0",
+      "why": "v1.36.6 pins 0.39.0: high fixable CVE-2026-56851, fixed in 0.41.0 (Scout, 2026-10-28). MVS resolves 0.43.0."
+    },
+    {
+      "module": "google.golang.org/grpc",
+      "to": "v1.83.2",
+      "why": "v1.36.6 pins 1.79.3: high fixable GHSA-hrxh-6v49-42gf, CVE-2026-84445, CVE-2026-84304 (fixed 1.82.1-1.83.1; Scout and grype, 2026-10-28); v1.83.2 is the fleet floor (GHSA-2v4p-qf9q-27wj open on 1.83.1)."
+    },
+    {
+      "module": "go.opentelemetry.io/otel/sdk",
+      "to": "v1.44.0",
+      "why": "v1.36.6 pins 1.40.0: high fixable CVE-2026-39883 / GHSA-hfvc-g4fc-pqhx, fixed in 1.43.0 (Scout and grype, 2026-10-28). The OpenTelemetry modules move together to v1.44.0, the set kubernetes v1.37.1 pins."
+    },
+    {
+      "module": "go.opentelemetry.io/otel",
+      "to": "v1.44.0",
+      "why": "v1.36.6 pins 1.41.0: medium fixable GO-2026-5158, fixed in 1.44.0 (grype, 2026-10-28); moves with otel/sdk."
+    },
+    {
+      "module": "go.opentelemetry.io/otel/metric",
+      "to": "v1.44.0",
+      "why": "moves with go.opentelemetry.io/otel (one OpenTelemetry release, one version)."
+    },
+    {
+      "module": "go.opentelemetry.io/otel/trace",
+      "to": "v1.44.0",
+      "why": "moves with go.opentelemetry.io/otel (one OpenTelemetry release, one version)."
+    },
+    {
+      "module": "go.opentelemetry.io/otel/exporters/otlp/otlptrace",
+      "to": "v1.44.0",
+      "why": "moves with go.opentelemetry.io/otel (one OpenTelemetry release, one version)."
+    },
+    {
+      "module": "go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc",
+      "to": "v1.44.0",
+      "why": "moves with go.opentelemetry.io/otel (one OpenTelemetry release, one version)."
+    },
+    {
+      "module": "go.etcd.io/etcd/client/pkg/v3",
+      "to": "v3.6.16",
+      "why": "v1.36.6 pins the etcd client modules at 3.6.8: high fixable CVE-2026-73500 in client/pkg, fixed in 3.6.14 (Scout, 2026-10-28); api/v3, client/pkg/v3 and client/v3 move together to the etcd release this stack runs (v3.6.16, the pin manifest)."
+    },
+    {
+      "module": "go.etcd.io/etcd/client/v3",
+      "to": "v3.6.16",
+      "why": "moves with go.etcd.io/etcd/client/pkg/v3 (one etcd release, one version)."
+    },
+    {
+      "module": "go.etcd.io/etcd/api/v3",
+      "to": "v3.6.16",
+      "why": "moves with go.etcd.io/etcd/client/pkg/v3 (one etcd release, one version)."
+    }
+  ],
+  "expected_residuals": [],
+  "images": [
+    {
+      "digest": "sha256:dc40a13b61304647ed7e5d581d246b86413dfc29d63c6d018310feb93cd98fc0",
+      "ref": "golang:1.26.11-bookworm",
+      "role": "builder"
+    },
+    {
+      "digest": "sha256:dc40a13b61304647ed7e5d581d246b86413dfc29d63c6d018310feb93cd98fc0",
+      "ref": "golang:1.26.11-bookworm",
+      "role": "offline_builder"
+    },
+    {
+      "digest": "sha256:9c7f200c07e3d4a03e7249d2c16bf66a51120fb876aa2242cf31451412543289",
+      "ref": "ubuntu:24.04",
+      "role": "base"
+    }
+  ],
+  "mod_replaces": [],
+  "runtime_packages": [
+    "ca-certificates",
+    "tzdata"
+  ],
+  "schema": "kitforge.toolchain_lock.v1",
+  "slug": "kubescheduler",
+  "source": {
+    "builder_image": "golang:1.26.11-bookworm",
+    "commit": "1b2171b110bb2a2542e1322035c6583ec86eb976",
+    "commit_epoch": 1793102572,
+    "components": [
+      {
+        "commit": "1b2171b110bb2a2542e1322035c6583ec86eb976",
+        "license": "Apache-2.0",
+        "ref": "v1.36.6",
+        "repo": "https://github.com/kubernetes/kubernetes"
+      }
+    ],
+    "go_version_required": "1.26.0",
+    "ref": "v1.36.6",
+    "repo": "https://github.com/kubernetes/kubernetes",
+    "source_date_epoch": 1795244555,
+    "source_date_epoch_basis": "release-cut",
+    "source_date_epoch_provenance": "the time release v1.36.6-CE-ubuntu24.04-r5 was cut (2026-11-21T07:02:35Z), by scripts/rerelease-agenda.py: ReadyStack dates an image by when its release was packaged (owner 2026-11-10), recorded here once and used by every rebuild of the release; it builds upstream commit 1b2171b110bb, dated 2026-10-27T12:02:52Z (source.commit_epoch).",
+    "vendor_committed": true
+  },
+  "version": "v1.36.6"
+}

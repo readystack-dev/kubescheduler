@@ -1,0 +1,48 @@
+{
+  "schema": "kitforge.build_recipe.v1",
+  "slug": "kubescheduler",
+  "image": "readystack/kubescheduler:v1.36.6-CE-ubuntu24.04-r5",
+  "build_method": "source-rebuild-go",
+  "source": {
+    "repo": "https://github.com/kubernetes/kubernetes",
+    "ref": "v1.36.6",
+    "commit": "1b2171b110bb2a2542e1322035c6583ec86eb976",
+    "source_date_epoch": 1795244555,
+    "source_date_epoch_provenance": "the time release v1.36.6-CE-ubuntu24.04-r5 was cut (2026-11-21T07:02:35Z), by scripts/rerelease-agenda.py: ReadyStack dates an image by when its release was packaged (owner 2026-11-10), recorded here once and used by every rebuild of the release; it builds upstream commit 1b2171b110bb, dated 2026-10-27T12:02:52Z (source.commit_epoch).",
+    "builder_image": "golang:1.26.11-bookworm",
+    "go_version_required": "1.26.0",
+    "vendor_committed": true,
+    "components": [
+      {
+        "repo": "https://github.com/kubernetes/kubernetes",
+        "ref": "v1.36.6",
+        "commit": "1b2171b110bb2a2542e1322035c6583ec86eb976",
+        "license": "Apache-2.0"
+      }
+    ],
+    "_version_note": "kubernetes v1.36.6 (2026-10-27), the latest 1.36 patch, fixed by the pin manifest registry/stacks/kubevirt-stack.json (owner 2026-10-28: Kubernetes 1.36 with KubeVirt v1.9.1, which supports 1.34-1.36). Go 1.26.10 for every Go build (pin manifest compat.go). The hand kit asserts the clone's commit and every binary's toolchain.",
+    "source_date_epoch_basis": "release-cut",
+    "commit_epoch": 1793102572
+  },
+  "binaries_from_source": [
+    {
+      "name": "kube-scheduler",
+      "main_pkg": "./cmd/kube-scheduler",
+      "ldflags": "-s -w -X k8s.io/client-go/pkg/version.gitVersion=@VERSION@ -X k8s.io/client-go/pkg/version.gitCommit=@COMMIT@ -X k8s.io/client-go/pkg/version.gitTreeState=clean -X k8s.io/client-go/pkg/version.gitMajor=1 -X k8s.io/client-go/pkg/version.gitMinor=36 -X k8s.io/client-go/pkg/version.buildDate=2026-11-21T07:02:35Z -X k8s.io/component-base/version.gitVersion=@VERSION@ -X k8s.io/component-base/version.gitCommit=@COMMIT@ -X k8s.io/component-base/version.gitTreeState=clean -X k8s.io/component-base/version.gitMajor=1 -X k8s.io/component-base/version.gitMinor=36 -X k8s.io/component-base/version.buildDate=2026-11-21T07:02:35Z",
+      "out_path": "/usr/local/bin/kube-scheduler",
+      "verify_subcmd": "--version",
+      "verify_contains": "Kubernetes @VERSION@"
+    },
+    {
+      "name": "kube-log-runner",
+      "main_pkg": "./staging/src/k8s.io/component-base/logs/kube-log-runner",
+      "ldflags": "-s -w -X k8s.io/client-go/pkg/version.gitVersion=@VERSION@ -X k8s.io/client-go/pkg/version.gitCommit=@COMMIT@ -X k8s.io/client-go/pkg/version.gitTreeState=clean -X k8s.io/client-go/pkg/version.gitMajor=1 -X k8s.io/client-go/pkg/version.gitMinor=36 -X k8s.io/client-go/pkg/version.buildDate=2026-11-21T07:02:35Z -X k8s.io/component-base/version.gitVersion=@VERSION@ -X k8s.io/component-base/version.gitCommit=@COMMIT@ -X k8s.io/component-base/version.gitTreeState=clean -X k8s.io/component-base/version.gitMajor=1 -X k8s.io/component-base/version.gitMinor=36 -X k8s.io/component-base/version.buildDate=2026-11-21T07:02:35Z",
+      "out_path": "/go-runner",
+      "_note": "upstream's server-image ENTRYPOINT (build/server-image/Dockerfile copies kube-log-runner to /go-runner); no --version flag"
+    }
+  ],
+  "runtime_packages": [
+    "ca-certificates",
+    "tzdata"
+  ]
+}
